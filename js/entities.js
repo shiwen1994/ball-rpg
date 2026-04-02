@@ -4,7 +4,7 @@
  */
 
 // ==================== 常量 ====================
-const GRID_COLS = 6;
+const GRID_COLS = 8;
 const GRID_ROWS = 8;
 const BALL_RADIUS = 8;
 const BALL_SPEED = 10; // px/frame

@@ -99,7 +99,7 @@ class Game {
     this.shotsRemaining = this.shotsPerRound + Math.min(floor - 1, 5); // 层数越高发射越多
 
     // 根据层数决定怪物数量和类型
-    const monsterCount = Math.min(3 + Math.floor(floor * 1.5), GRID_COLS * 3);
+    const monsterCount = Math.min(5 + Math.floor(floor * 2), GRID_COLS * 3);
     const positions = this.getRandomGridPositions(monsterCount);
 
     for (let i = 0; i < positions.length; i++) {
