@@ -1,0 +1,169 @@
+/* 弹珠 RPG — 主样式 */
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+html, body {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background: #0d0703;
+  font-family: 'Nunito', -apple-system, 'PingFang SC', sans-serif;
+  touch-action: none;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+#game-container {
+  width: 100%;
+  height: 100%;
+  max-width: 450px;
+  margin: 0 auto;
+  position: relative;
+  background: #1a0f05;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* 顶栏 */
+.top-bar {
+  height: 48px;
+  background: linear-gradient(180deg, #2a1a08, #1a0f05);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 14px;
+  flex-shrink: 0;
+  z-index: 10;
+}
+.level-badge {
+  display: flex; align-items: center; gap: 5px;
+  background: rgba(255,180,50,0.12);
+  border: 1px solid rgba(255,180,50,0.2);
+  border-radius: 18px;
+  padding: 4px 10px 4px 5px;
+}
+.level-star {
+  width: 20px; height: 20px;
+  background: linear-gradient(135deg, #FFD54F, #FF8F00);
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 10px;
+}
+.level-text { color: #FFD54F; font-size: 13px; font-weight: 900; }
+.stage-display { text-align: center; }
+.chapter-label { color: rgba(255,255,255,0.3); font-size: 8px; letter-spacing: 2px; }
+.floor-num { color: #fff; font-size: 18px; font-weight: 900; }
+.floor-num span { color: #4FC3F7; }
+.ctrl-btns { display: flex; gap: 6px; }
+.ctrl-btn {
+  width: 32px; height: 32px; border-radius: 9px;
+  border: none; color: #fff; font-size: 12px; font-weight: 800;
+  cursor: pointer; display: flex; align-items: center; justify-content: center;
+}
+.speed-btn { background: linear-gradient(135deg, #FF6B35, #F7931E); }
+.pause-btn { background: linear-gradient(135deg, #455A64, #37474F); }
+
+/* Canvas 容器 */
+.canvas-wrap {
+  flex: 1;
+  position: relative;
+  overflow: hidden;
+}
+#game-canvas {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+/* 经验条 */
+.exp-bar {
+  height: 40px;
+  background: linear-gradient(180deg, #2a1a08, #1a0f05);
+  padding: 6px 16px 8px;
+  display: flex; flex-direction: column; gap: 4px;
+  border-top: 1px solid rgba(255,200,120,0.06);
+  flex-shrink: 0;
+}
+.exp-info { display: flex; justify-content: space-between; align-items: center; }
+.exp-level {
+  display: flex; align-items: center; gap: 4px;
+  color: #FFD54F; font-size: 11px; font-weight: 900;
+}
+.exp-value { color: rgba(255,255,255,0.3); font-size: 10px; font-weight: 700; }
+.exp-track {
+  height: 9px; background: rgba(0,0,0,0.4); border-radius: 5px;
+  overflow: hidden;
+}
+.exp-fill {
+  height: 100%; width: 30%;
+  background: linear-gradient(90deg, #F57C00, #FFB300, #FFD54F);
+  border-radius: 5px;
+  transition: width 0.3s;
+}
+
+/* 发射信息 */
+.shot-info {
+  position: absolute; right: 12px; bottom: 52px;
+  background: rgba(0,0,0,0.4);
+  backdrop-filter: blur(4px);
+  border-radius: 10px;
+  padding: 4px 10px;
+  display: flex; align-items: center; gap: 4px;
+  border: 1px solid rgba(255,255,255,0.06);
+  z-index: 5;
+  pointer-events: none;
+}
+.shot-count { color: #4FC3F7; font-size: 15px; font-weight: 900; }
+
+/* 升级面板 */
+.upgrade-overlay {
+  position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.78);
+  backdrop-filter: blur(6px);
+  display: none; /* JS 控制显示 */
+  flex-direction: column;
+  align-items: center; justify-content: center;
+  z-index: 100;
+  padding: 20px;
+  gap: 14px;
+}
+.upgrade-overlay.active { display: flex; }
+.upgrade-title { color: #FFD54F; font-size: 18px; font-weight: 900; }
+.upgrade-cards { display: flex; gap: 10px; width: 100%; }
+.upgrade-card {
+  flex: 1; background: linear-gradient(180deg, rgba(42,26,8,0.95), rgba(26,15,5,0.98));
+  border-radius: 14px; padding: 14px 8px 10px;
+  display: flex; flex-direction: column; align-items: center; gap: 6px;
+  border: 2px solid transparent; cursor: pointer;
+}
+.upgrade-card.common { border-color: #9E9E9E; }
+.upgrade-card.rare { border-color: #7C4DFF; }
+.upgrade-card.epic { border-color: #FFAB00; }
+.card-icon { width: 40px; height: 40px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 20px; }
+.card-name { color: #fff; font-size: 12px; font-weight: 900; }
+.card-desc { color: rgba(255,255,255,0.45); font-size: 9px; text-align: center; line-height: 1.35; }
+.card-rarity { font-size: 8px; font-weight: 800; padding: 2px 8px; border-radius: 6px; margin-top: 2px; }
+.rarity-common { background: rgba(158,158,158,0.12); color: #9E9E9E; }
+.rarity-rare { background: rgba(124,77,255,0.1); color: #B388FF; }
+.rarity-epic { background: rgba(255,171,0,0.1); color: #FFD740; }
+
+/* 游戏结束/过关弹窗 */
+.game-overlay {
+  position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.75);
+  backdrop-filter: blur(4px);
+  display: none; flex-direction: column;
+  align-items: center; justify-content: center;
+  z-index: 100; gap: 14px;
+}
+.game-overlay.active { display: flex; }
+.overlay-title { font-size: 24px; font-weight: 900; color: #fff; }
+.overlay-sub { font-size: 13px; color: rgba(255,255,255,0.5); }
+.overlay-btn {
+  padding: 12px 32px; border-radius: 12px; border: none;
+  font-size: 15px; font-weight: 800; cursor: pointer;
+  color: #fff;
+}
+.btn-primary { background: linear-gradient(135deg, #66BB6A, #43A047); }
+.btn-secondary { background: linear-gradient(135deg, #FF6B35, #F7931E); }

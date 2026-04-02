@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1.0">
+<title>弹珠 RPG v2 - 主界面设计稿</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  
+  body {
+    background: #1a0f00;
+    font-family: -apple-system, 'PingFang SC', 'Microsoft YaHei', sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    min-height: 100vh;
+    padding: 10px;
+  }
+
+  .phone-frame {
+    width: 375px;
+    height: 812px;
+    background: #2D1B00;
+    border-radius: 40px;
+    overflow: hidden;
+    position: relative;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.6), inset 0 0 0 3px #4a3520;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* ====== 顶栏 ====== */
+  .top-bar {
+    height: 50px;
+    background: linear-gradient(180deg, #3D2817 0%, #2D1B00 100%);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 14px;
+    border-bottom: 2px solid #1a0f00;
+    flex-shrink: 0;
+  }
+  
+  .top-left { display: flex; align-items: center; gap: 8px; }
+  
+  .coin-display {
+    display: flex; align-items: center;
+    background: rgba(0,0,0,0.4);
+    border-radius: 16px;
+    padding: 4px 10px 4px 4px;
+    gap: 4px;
+  }
+  
+  .coin-icon {
+    width: 24px; height: 24px;
+    background: linear-gradient(135deg, #FFD700 0%, #FFA000 100%);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px;
+    box-shadow: 0 2px 4px rgba(255,215,0,0.4);
+  }
+  
+  .coin-amount { color: #FFD700; font-size: 13px; font-weight: 800; letter-spacing: -0.5px; }
+  
+  .level-display { text-align: center; }
+  .chapter-text { color: #C8A84E; font-size: 11px; font-weight: 600; }
+  .floor-text { color: #FFF; font-size: 15px; font-weight: 800; text-shadow: 0 2px 4px rgba(0,0,0,0.5); }
+  .floor-num { color: #4FC3F7; }
+  
+  .top-right { display: flex; gap: 8px; }
+  
+  .ctrl-btn {
+    width: 32px; height: 32px; border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 13px; font-weight: 700; cursor: pointer;
+    border: none; color: #fff;
+  }
+  .speed-btn { background: linear-gradient(135deg, #FF6B35 0%, #F7931E 100%); box-shadow: 0 2px 6px rgba(255,107,53,0.4); }
+  .pause-btn { background: linear-gradient(135deg, #607D8B 0%, #455A64 100%); box-shadow: 0 2px 6px rgba(96,125,139,0.4); }
+
+  /* ====== 任务提示条 ====== */
+  .task-bar {
+    height: 28px;
+    background: linear-gradient(90deg, rgba(76,175,80,0.15) 0%, rgba(76,175,80,0.05) 100%);
+    display: flex; align-items: center; padding: 0 14px; gap: 6px;
+    border-bottom: 1px solid rgba(76,175,80,0.2);
+    flex-shrink: 0;
+  }
+  .task-icon { font-size: 12px; }
+  .task-text { color: #81C784; font-size: 11px; flex: 1; }
+  .task-progress { color: #A5D6A7; font-size: 11px; font-weight: 700; }
+
+  /* ====== 战场区（弹性占据剩余空间）===== */
+  .battlefield {
+    flex: 1;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .grid-wrapper {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 8px;
+    padding-bottom: 4px;
+  }
+  
+  .grid-container {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    grid-template-rows: repeat(7, 1fr);
+    gap: 3px;
+    width: 100%;
+    max-width: 340px;
+  }
+  
+  .grid-cell {
+    aspect-ratio: 1;
+    background: linear-gradient(135deg, #4A7C23 0%, #3D6B1E 100%);
+    border-radius: 6px;
+    border: 1px solid #5A8C2E;
+    position: relative;
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: inset 0 2px 4px rgba(0,0,0,0.15), inset 0 -1px 0 rgba(255,255,255,0.05);
+    overflow: visible;
+  }
+  
+  /* 怪物 */
+  .monster {
+    width: 78%; height: 78%; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px; position: relative;
+    animation: monsterIdle 2s ease-in-out infinite;
+    box-shadow: 0 3px 8px rgba(0,0,0,0.3), inset 0 -3px 6px rgba(0,0,0,0.2);
+  }
+  @keyframes monsterIdle {
+    0%, 100% { transform: scale(1) translateY(0); }
+    50% { transform: scale(1.05) translateY(-2px); }
+  }
+  
+  .monster-slime { background: radial-gradient(circle at 30% 30%, #81C784, #4CAF50 50%, #388E3C); border: 2px solid #66BB6A; }
+  .monster-bat { background: radial-gradient(circle at 30% 30%, #CE93D8, #9C27B0 50%, #7B1FA2); border: 2px solid #BA68C8; border-radius: 45% 45% 50% 50%; }
+  .monster-skeleton { background: radial-gradient(circle at 30% 30%, #F5F5F5, #E0E0E0 50%, #BDBDBD); border: 2px solid #E0E0E0; border-radius: 12%; }
+  .monster-mimic { background: radial-gradient(circle at 30% 30%, #FFE082, #FFC107 50%, #FF8F00); border: 2px solid #FFD54F; border-radius: 8px; }
+  .monster-golem { background: radial-gradient(circle at 30% 30%, #90A4AE, #607D8B 50%, #455A64); border: 2px solid #78909C; border-radius: 10%; }
+  
+  /* 血条 */
+  .hp-bar-wrap {
+    position: absolute; bottom: -5px; left: 50%; transform: translateX(-50%);
+    width: 85%; height: 4px; background: rgba(0,0,0,0.5); border-radius: 2px; overflow: hidden;
+  }
+  .hp-bar { height: 100%; border-radius: 2px; transition: width 0.3s; }
+  .hp-bar.high { background: linear-gradient(90deg, #4CAF50, #8BC34A); }
+  .hp-bar.mid { background: linear-gradient(90deg, #FF9800, #FFC107); }
+  .hp-bar.low { background: linear-gradient(90deg, #F44336, #FF5722); }
+  
+  /* 宝箱 */
+  .chest {
+    width: 78%; height: 78%;
+    background: linear-gradient(135deg, #FFB74D 0%, #FF9800 50%, #F57C00 100%);
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px;
+    box-shadow: 0 3px 8px rgba(255,152,0,0.4), inset 0 2px 4px rgba(255,255,255,0.2);
+    border: 2px solid #FFA726;
+    animation: chestGlow 2s ease-in-out infinite;
+  }
+  @keyframes chestGlow {
+    0%, 100% { box-shadow: 0 3px 8px rgba(255,152,0,0.4), 0 0 10px rgba(255,152,0,0.2); }
+    50% { box-shadow: 0 3px 8px rgba(255,152,0,0.6), 0 0 18px rgba(255,152,0,0.4); }
+  }
+  
+  /* 问号箱 */
+  .mystery-box {
+    width: 78%; height: 78%;
+    background: linear-gradient(135deg, #7E57C2 0%, #5E35B1 100%);
+    border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px; font-weight: 900; color: #fff;
+    box-shadow: 0 3px 12px rgba(94,53,177,0.5);
+    border: 2px solid #9575CD;
+    animation: mysteryPulse 1.5s ease-in-out infinite;
+  }
+  @keyframes mysteryPulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.08); }
+  }
+
+  /* ====== 发射区 ====== */
+  .launch-zone {
+    height: 110px;
+    background: linear-gradient(180deg, rgba(45,27,0,0) 0%, rgba(45,27,0,0.9) 100%);
+    display: flex; flex-direction: column; align-items: center; justify-content: flex-end;
+    padding-bottom: 8px;
+    position: relative;
+    flex-shrink: 0;
+  }
+  
+  /* 弹道线 */
+  .trajectory-line {
+    position: absolute; bottom: 65px; left: 50%;
+    width: 180px; height: 140px;
+    transform-origin: bottom center;
+    transform: translateX(-50%) rotate(-22deg);
+    pointer-events: none;
+  }
+  .traj-svg { width: 100%; height: 100%; overflow: visible; }
+  .traj-path { fill: none; stroke: rgba(255,255,255,0.35); stroke-width: 2; stroke-dasharray: 8 6; stroke-linecap: round; }
+  .traj-dot { fill: rgba(255,255,255,0.6); }
+  
+  /* 角色 */
+  .player-char {
+    width: 42px; height: 42px;
+    background: linear-gradient(135deg, #42A5F5 0%, #1976D2 50%, #0D47A1 100%);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 20px;
+    box-shadow: 0 4px 12px rgba(25,118,210,0.5), inset 0 2px 4px rgba(255,255,255,0.2);
+    border: 3px solid #64B5F6;
+    z-index: 5; position: relative;
+  }
+  .player-char::after {
+    content: ''; position: absolute; bottom: -8px; left: 50%; transform: translateX(-50%);
+    width: 28px; height: 5px; background: rgba(0,0,0,0.3); border-radius: 50%;
+  }
+  
+  /* 弹珠预览 */
+  .ball-preview {
+    position: absolute; width: 11px; height: 11px;
+    background: radial-gradient(circle at 30% 30%, #fff, #e0e0e0);
+    border-radius: 50%;
+    box-shadow: 0 0 10px rgba(255,255,255,0.8), 0 0 20px rgba(255,255,255,0.3);
+    z-index: 10; animation: ballFloat 1.5s ease-in-out infinite;
+  }
+  @keyframes ballFloat { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+  
+  /* 次数显示 */
+  .shots-display {
+    position: absolute; right: 12px; top: 50%; transform: translateY(-50%);
+    background: rgba(0,0,0,0.5); border-radius: 10px; padding: 4px 10px;
+    display: flex; align-items: center; gap: 4px;
+  }
+  .shots-icon { font-size: 13px; }
+  .shots-count { color: #4FC3F7; font-size: 15px; font-weight: 800; }
+
+  /* ====== 经验条（v2 核心）===== */
+  .exp-bar-wrap {
+    height: 40px;
+    background: linear-gradient(180deg, #3D2817 0%, #2D1B00 100%);
+    padding: 6px 16px;
+    display: flex; flex-direction: column; gap: 3px;
+    border-top: 2px solid #1a0f00;
+    flex-shrink: 0;
+  }
+  
+  .exp-info {
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  
+  .exp-level {
+    color: #FFD700; font-size: 12px; font-weight: 800;
+    display: flex; align-items: center; gap: 4px;
+  }
+  .exp-star { font-size: 14px; }
+  
+  .exp-value {
+    color: #aaa; font-size: 11px; font-weight: 600;
+  }
+  
+  .exp-track {
+    height: 10px;
+    background: rgba(0,0,0,0.5);
+    border-radius: 5px;
+    overflow: hidden;
+    position: relative;
+  }
+  
+  .exp-fill {
+    height: 100%;
+    width: 56%;
+    background: linear-gradient(90deg, #FF9800, #FFD54F, #FFEB3B);
+    border-radius: 5px;
+    box-shadow: 0 0 8px rgba(255,193,7,0.4);
+    position: relative;
+    transition: width 0.5s ease;
+  }
+  
+  .exp-fill::after {
+    content: '';
+    position: absolute; right: 0; top: 0; bottom: 0;
+    width: 4px; background: #FFF; border-radius: 2px;
+    box-shadow: 0 0 6px rgba(255,255,255,0.8);
+  }
+
+  /* ====== 升级面板弹窗（v2 核心）===== */
+  .upgrade-overlay {
+    position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.75);
+    backdrop-filter: blur(4px);
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    z-index: 100;
+    padding: 20px;
+  }
+  
+  .upgrade-title {
+    color: #FFD700; font-size: 18px; font-weight: 800;
+    margin-bottom: 16px;
+    text-shadow: 0 2px 8px rgba(255,215,0,0.3);
+  }
+  
+  .upgrade-cards {
+    display: flex; gap: 10px; width: 100%;
+  }
+  
+  .upgrade-card {
+    flex: 1;
+    background: linear-gradient(180deg, #3D2817 0%, #2D1B00 100%);
+    border-radius: 14px;
+    padding: 14px 10px;
+    display: flex; flex-direction: column;
+    align-items: center; gap: 6px;
+    cursor: pointer;
+    border: 2px solid transparent;
+    transition: transform 0.15s, box-shadow 0.15s;
+  }
+  .upgrade-card:active { transform: scale(0.95); }
+  
+  .upgrade-card.common { border-color: #9E9E9E; box-shadow: 0 4px 12px rgba(158,158,158,0.2); }
+  .upgrade-card.rare { border-color: #7C4DFF; box-shadow: 0 4px 12px rgba(124,77,255,0.3); }
+  .upgrade-card.epic { border-color: #FFAB00; box-shadow: 0 4px 12px rgba(255,171,0,0.35); }
+  
+  .card-icon {
+    width: 42px; height: 42px;
+    border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 22px;
+  }
+  .card-icon.common-bg { background: linear-gradient(135deg, #757575, #616161); }
+  .card-icon.rare-bg { background: linear-gradient(135deg, #7C4DFF, #651FFF); }
+  .card-icon.epic-bg { background: linear-gradient(135deg, #FFAB00, #FF6D00); }
+  
+  .card-name {
+    color: #fff; font-size: 12px; font-weight: 800;
+    text-align: center;
+  }
+  
+  .card-desc {
+    color: #bbb; font-size: 10px;
+    text-align: center; line-height: 1.3;
+  }
+  
+  .card-rarity {
+    font-size: 9px; font-weight: 700; margin-top: 2px;
+    padding: 2px 8px; border-radius: 6px;
+  }
+  .rarity-common { background: rgba(158,158,158,0.2); color: #9E9E9E; }
+  .rarity-rare { background: rgba(124,77,255,0.15); color: #B388FF; }
+  .rarity-epic { background: rgba(255,171,0,0.15); color: #FFD740; }
+
+</style>
+</head>
+<body>
+
+<div style="display:flex;gap:25px;flex-wrap:wrap;justify-content:center;">
+  
+  <!-- 手机框架 -->
+  <div class="phone-frame">
+    
+    <!-- 顶栏 -->
+    <div class="top-bar">
+      <div class="top-left">
+        <div class="coin-display">
+          <div class="coin-icon">⭐</div>
+          <span class="coin-amount">Lv.16</span>
+        </div>
+      </div>
+      <div class="level-display">
+        <div class="chapter-text">第 16 章</div>
+        <div class="floor-text"><span class="floor-num">85</span> 层</div>
+      </div>
+      <div class="top-right">
+        <button class="ctrl-btn speed-btn">×2</button>
+        <button class="ctrl-btn pause-btn">⏸</button>
+      </div>
+    </div>
+
+    <!-- 任务提示 -->
+    <div class="task-bar">
+      <span class="task-icon">📋</span>
+      <span class="task-text">任务：击杀 5 只怪物</span>
+      <span class="task-progress">3/5</span>
+    </div>
+
+    <!-- 战场区 -->
+    <div class="battlefield">
+      <div class="grid-wrapper">
+        <div class="grid-container" id="grid">
+          <!-- Row 1 -->
+          <div class="grid-cell"></div>
+          <div class="grid-cell"><div class="monster monster-slime">🟢<div class="hp-bar-wrap"><div class="hp-bar high" style="width:90%"></div></div></div></div>
+          <div class="grid-cell"><div class="monster monster-slime">🟢<div class="hp-bar-wrap"><div class="hp-bar high" style="width:75%"></div></div></div></div>
+          <div class="grid-cell"><div class="monster monster-bat">🦇<div class="hp-bar-wrap"><div class="hp-bar mid" style="width:55%"></div></div></div></div>
+          <div class="grid-cell"></div>
+          <div class="grid-cell"></div>
+          
+          <!-- Row 2 -->
+          <div class="grid-cell"></div>
+          <div class="grid-cell"><div class="monster monster-bat">🦇<div class="hp-bar-wrap"><div class="hp-bar mid" style="width:40%"></div></div></div></div>
+          <div class="grid-cell"><div class="monster monster-skeleton">💀<div class="hp-bar-wrap"><div class="hp-bar low" style="width:25%"></div></div></div></div>
+          <div class="grid-cell"><div class="chest">📦</div></div>
+          <div class="grid-cell"></div>
+          <div class="grid-cell"></div>
+          
+          <!-- Row 3 -->
+          <div class="grid-cell"></div>
+          <div class="grid-cell"><div class="monster monster-slime">🟢<div class="hp-bar-wrap"><div class="hp-bar high" style="width:100%"></div></div></div></div>
+          <div class="grid-cell"><div class="monster monster-golem">🗿<div class="hp-bar-wrap"><div class="hp-bar low" style="width:15%"></div></div></div></div>
+          <div class="grid-cell"></div>
+          <div class="grid-cell"><div class="chest">📦</div></div>
+          <div class="grid-cell"></div>
+          
+          <!-- Row 4 -->
+          <div class="grid-cell"></div>
+          <div class="grid-cell"></div>
+          <div class="grid-cell"><div class="monster monster-bat">🦇<div class="hp-bar-wrap"><div class="hp-bar mid" style="width:60%"></div></div></div></div>
+          <div class="grid-cell"><div class="monster monster-mimic">🎁<div class="hp-bar-wrap"><div class="hp-bar low" style="width:30%"></div></div></div></div>
+          <div class="grid-cell"><div class="mystery-box">?</div></div>
+          <div class="grid-cell"></div>
+          
+          <!-- Row 5-7 (空行) -->
+          <div class="grid-cell"></div><div class="grid-cell"></div><div class="grid-cell"></div><div class="grid-cell"></div><div class="grid-cell"></div><div class="grid-cell"></div>
+          <div class="grid-cell"></div><div class="grid-cell"></div><div class="grid-cell"></div><div class="grid-cell"></div><div class="grid-cell"></div><div class="grid-cell"></div>
+          <div class="grid-cell"></div><div class="grid-cell"></div><div class="grid-cell"></div><div class="grid-cell"></div><div class="grid-cell"></div><div class="grid-cell"></div>
+        </div>
+      </div>
+      
+      <!-- 发射区 -->
+      <div class="launch-zone">
+        <svg class="trajectory-line" viewBox="0 0 180 140">
+          <path class="traj-path" d="M90,138 Q115,90 150,38 Q165,18 173,8"/>
+          <circle class="traj-dot" cx="173" cy="8" r="3.5"/>
+          <circle class="traj-dot" cx="160" cy="24" r="2.5"/>
+          <circle class="traj-dot" cx="142" cy="48" r="2.5"/>
+          <circle class="traj-dot" cx="118" cy="78" r="2.5"/>
+          <circle class="traj-dot" cx="100" cy="106" r="2.5"/>
+        </svg>
+        
+        <div class="shots-display">
+          <span class="shots-icon">🎯</span>
+          <span class="shots-count">12</span>
+        </div>
+        
+        <div class="player-char">🧙‍♂️</div>
+        <div class="ball-preview" style="bottom:76px;left:calc(50% - 5.5px);"></div>
+      </div>
+      
+      <!-- ★ 升级面板弹窗（示例展示）★ -->
+      <div class="upgrade-overlay">
+        <div class="upgrade-title">⬆️ 升级！选择一项能力</div>
+        <div class="upgrade-cards">
+          <div class="upgrade-card epic">
+            <div class="card-icon epic-bg">🔥</div>
+            <div class="card-name">火焰弹</div>
+            <div class="card-desc">弹珠带火焰轨迹<br/>对经过格子造成<br/>持续伤害</div>
+            <div class="card-rarity rarity-epic">史诗</div>
+          </div>
+          <div class="upgrade-card rare">
+            <div class="card-icon rare-bg">💠</div>
+            <div class="card-name">穿透×2</div>
+            <div class="card-desc">弹珠可穿透<br/>2个目标不消失</div>
+            <div class="card-rarity rarity-rare">稀有</div>
+          </div>
+          <div class="upgrade-card common">
+            <div class="card-icon common-bg">⚔️</div>
+            <div class="card-name">伤害+3</div>
+            <div class="card-desc">弹珠基础<br/>伤害提升3点</div>
+            <div class="card-rarity rarity-common">普通</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 经验条（v2 底部唯一元素）-->
+    <div class="exp-bar-wrap">
+      <div class="exp-info">
+        <div class="exp-level"><span class="exp-star">⭐</span> Lv.16 → Lv.17</div>
+        <div class="exp-value">280 / 500 EXP</div>
+      </div>
+      <div class="exp-track">
+        <div class="exp-fill" style="width:56%"></div>
+      </div>
+    </div>
+    
+  </div>
+  
+  <!-- 设计说明 -->
+  <div style="margin-top:15px;padding:15px;background:#1e1200;border-radius:12px;max-width:375px;border:1px solid #3d2817;">
+    <h3 style="color:#C8A84E;font-size:14px;margin-bottom:10px;">🎨 v2 设计变化</h3>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+      <div style="background:rgba(255,255,255,0.04);padding:8px;border-radius:8px;border-left:3px solid #F44336;">
+        <div style="color:#F44336;font-size:11px;font-weight:600;">❌ 已删除</div>
+        <div style="color:#ccc;font-size:11px;margin-top:2px;">技能栏(4个)<br/>强化/任务/商店入口<br/>资源栏(食物/能量/宝石)</div>
+      </div>
+      <div style="background:rgba(255,255,255,0.04);padding:8px;border-radius:8px;border-left:3px solid #4CAF50;">
+        <div style="color:#4CAF50;font-size:11px;font-weight:600;">✅ 新增/保留</div>
+        <div style="color:#ccc;font-size:11px;margin-top:2px;">经验条(底部核心UI)<br/>升级选择面板(3选1卡片)<br/>金币=经验值概念</div>
+      </div>
+      <div style="background:rgba(255,255,255,0.04);padding:8px;border-radius:8px;border-left:3px solid #FFD700;grid-column:span 2;">
+        <div style="color:#FFD700;font-size:11px;font-weight:600;">🎯 核心操作只有两个</div>
+        <div style="color:#ccc;font-size:11px;margin-top:2px;">① 点击发射弹珠 &nbsp; ② 升级时3选1能力（经验满 / 开宝箱触发）</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+</body>
+</html>

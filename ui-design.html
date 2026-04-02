@@ -1,0 +1,788 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1.0">
+<title>弹珠 RPG - 主界面设计稿</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  
+  body {
+    background: #1a0f00;
+    font-family: -apple-system, 'PingFang SC', 'Microsoft YaHei', sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    min-height: 100vh;
+    padding: 10px;
+  }
+
+  .phone-frame {
+    width: 375px;
+    height: 812px;
+    background: #2D1B00;
+    border-radius: 40px;
+    overflow: hidden;
+    position: relative;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.6), inset 0 0 0 3px #4a3520;
+  }
+
+  /* ====== 顶栏 ====== */
+  .top-bar {
+    height: 50px;
+    background: linear-gradient(180deg, #3D2817 0%, #2D1B00 100%);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 14px;
+    border-bottom: 2px solid #1a0f00;
+  }
+  
+  .top-left {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  
+  .coin-display {
+    display: flex;
+    align-items: center;
+    background: rgba(0,0,0,0.4);
+    border-radius: 16px;
+    padding: 4px 10px 4px 4px;
+    gap: 4px;
+  }
+  
+  .coin-icon {
+    width: 24px;
+    height: 24px;
+    background: linear-gradient(135deg, #FFD700 0%, #FFA000 100%);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    box-shadow: 0 2px 4px rgba(255,215,0,0.4);
+  }
+  
+  .coin-amount {
+    color: #FFD700;
+    font-size: 13px;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+  }
+  
+  .level-display {
+    text-align: center;
+  }
+  
+  .chapter-text {
+    color: #C8A84E;
+    font-size: 11px;
+    font-weight: 600;
+  }
+  
+  .floor-text {
+    color: #FFF;
+    font-size: 15px;
+    font-weight: 800;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+  }
+  
+  .floor-num {
+    color: #4FC3F7;
+  }
+  
+  .top-right {
+    display: flex;
+    gap: 8px;
+  }
+  
+  .ctrl-btn {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    border: none;
+    color: #fff;
+  }
+  
+  .speed-btn {
+    background: linear-gradient(135deg, #FF6B35 0%, #F7931E 100%);
+    box-shadow: 0 2px 6px rgba(255,107,53,0.4);
+  }
+  
+  .pause-btn {
+    background: linear-gradient(135deg, #607D8B 0%, #455A64 100%);
+    box-shadow: 0 2px 6px rgba(96,125,139,0.4);
+  }
+
+  /* ====== 任务提示条 ====== */
+  .task-bar {
+    height: 30px;
+    background: linear-gradient(90deg, rgba(76,175,80,0.15) 0%, rgba(76,175,80,0.05) 100%);
+    display: flex;
+    align-items: center;
+    padding: 0 14px;
+    gap: 6px;
+    border-bottom: 1px solid rgba(76,175,80,0.2);
+  }
+  
+  .task-icon {
+    font-size: 12px;
+  }
+  
+  .task-text {
+    color: #81C784;
+    font-size: 11px;
+    flex: 1;
+  }
+  
+  .task-progress {
+    color: #A5D6A7;
+    font-size: 11px;
+    font-weight: 700;
+  }
+
+  /* ====== 战场区 ====== */
+  .battlefield {
+    position: relative;
+    /* 高度由 JS 动态计算 */
+  }
+  
+  .grid-container {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    grid-template-rows: repeat(8, 1fr);
+    gap: 2px;
+    padding: 8px;
+    padding-bottom: 20px;
+  }
+  
+  .grid-cell {
+    aspect-ratio: 1;
+    background: linear-gradient(135deg, #4A7C23 0%, #3D6B1E 100%);
+    border-radius: 6px;
+    border: 1px solid #5A8C2E;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: inset 0 2px 4px rgba(0,0,0,0.15), inset 0 -1px 0 rgba(255,255,255,0.05);
+    overflow: visible;
+  }
+  
+  /* 怪物样式 */
+  .monster {
+    width: 80%;
+    height: 80%;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    position: relative;
+    animation: monsterIdle 2s ease-in-out infinite;
+    box-shadow: 0 3px 8px rgba(0,0,0,0.3), inset 0 -3px 6px rgba(0,0,0,0.2);
+  }
+  
+  @keyframes monsterIdle {
+    0%, 100% { transform: scale(1) translateY(0); }
+    50% { transform: scale(1.05) translateY(-2px); }
+  }
+  
+  /* 史莱姆 A */
+  .monster-slime {
+    background: radial-gradient(circle at 30% 30%, #81C784, #4CAF50 50%, #388E3C);
+    border: 2px solid #66BB6A;
+  }
+  
+  /* 蝙蝠 B */
+  .monster-bat {
+    background: radial-gradient(circle at 30% 30%, #CE93D8, #9C27B0 50%, #7B1FA2);
+    border: 2px solid #BA68C8;
+    border-radius: 45% 45% 50% 50%;
+  }
+  
+  /* 骷髅兵 C */
+  .monster-skeleton {
+    background: radial-gradient(circle at 30% 30%, #F5F5F5, #E0E0E0 50%, #BDBDBD);
+    border: 2px solid #E0E0E0;
+    border-radius: 12%;
+  }
+  
+  /* 宝箱怪 D */
+  .monster-mimic {
+    background: radial-gradient(circle at 30% 30%, #FFE082, #FFC107 50%, #FF8F00);
+    border: 2px solid #FFD54F;
+    border-radius: 8px;
+  }
+  
+  /* 岩石傀儡 E */
+  .monster-golem {
+    background: radial-gradient(circle at 30% 30%, #90A4AE, #607D8B 50%, #455A64);
+    border: 2px solid #78909C;
+    border-radius: 10%;
+  }
+  
+  /* 血条 */
+  .hp-bar-wrap {
+    position: absolute;
+    bottom: -6px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 85%;
+    height: 5px;
+    background: rgba(0,0,0,0.5);
+    border-radius: 3px;
+    overflow: hidden;
+  }
+  
+  .hp-bar {
+    height: 100%;
+    background: linear-gradient(90deg, #F44336, #FF5722);
+    border-radius: 3px;
+    transition: width 0.3s;
+  }
+  
+  .hp-bar.high { background: linear-gradient(90deg, #4CAF50, #8BC34A); }
+  .hp-bar.mid { background: linear-gradient(90deg, #FF9800, #FFC107); }
+  .hp-bar.low { background: linear-gradient(90deg, #F44336, #FF5722); }
+  
+  /* 宝箱 */
+  .chest {
+    width: 80%;
+    height: 80%;
+    background: linear-gradient(135deg, #FFB74D 0%, #FF9800 50%, #F57C00 100%);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    box-shadow: 0 3px 8px rgba(255,152,0,0.4), inset 0 2px 4px rgba(255,255,255,0.2);
+    border: 2px solid #FFA726;
+    animation: chestGlow 2s ease-in-out infinite;
+    position: relative;
+  }
+  
+  @keyframes chestGlow {
+    0%, 100% { box-shadow: 0 3px 8px rgba(255,152,0,0.4), 0 0 10px rgba(255,152,0,0.2); }
+    50% { box-shadow: 0 3px 8px rgba(255,152,0,0.6), 0 0 18px rgba(255,152,0,0.4); }
+  }
+  
+  /* 问号箱 */
+  .mystery-box {
+    width: 80%;
+    height: 80%;
+    background: linear-gradient(135deg, #7E57C2 0%, #5E35B1 100%);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    font-weight: 900;
+    color: #fff;
+    box-shadow: 0 3px 12px rgba(94,53,177,0.5);
+    border: 2px solid #9575CD;
+    animation: mysteryPulse 1.5s ease-in-out infinite;
+  }
+  
+  @keyframes mysteryPulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.08); }
+  }
+
+  /* ====== 发射区 ====== */
+  .launch-zone {
+    position: relative;
+    height: 120px;
+    background: linear-gradient(180deg, rgba(45,27,0,0) 0%, rgba(45,27,0,0.8) 100%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-end;
+    padding-bottom: 10px;
+  }
+  
+  /* 弹道预测线 */
+  .trajectory-line {
+    position: absolute;
+    bottom: 70px;
+    left: 50%;
+    width: 200px;
+    height: 160px;
+    transform-origin: bottom center;
+    transform: translateX(-50%) rotate(-25deg);
+    pointer-events: none;
+  }
+  
+  .traj-svg {
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+  }
+  
+  .traj-path {
+    fill: none;
+    stroke: rgba(255,255,255,0.35);
+    stroke-width: 2;
+    stroke-dasharray: 8 6;
+    stroke-linecap: round;
+  }
+  
+  .traj-dot {
+    fill: rgba(255,255,255,0.6);
+  }
+  
+  /* 角色 */
+  .player-char {
+    width: 44px;
+    height: 44px;
+    background: linear-gradient(135deg, #42A5F5 0%, #1976D2 50%, #0D47A1 100%);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+    box-shadow: 0 4px 12px rgba(25,118,210,0.5), inset 0 2px 4px rgba(255,255,255,0.2);
+    border: 3px solid #64B5F6;
+    z-index: 5;
+    position: relative;
+  }
+  
+  .player-char::after {
+    content: '';
+    position: absolute;
+    bottom: -8px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 30px;
+    height: 6px;
+    background: rgba(0,0,0,0.3);
+    border-radius: 50%;
+  }
+
+  /* ====== 资源栏 ====== */
+  .resource-bar {
+    height: 42px;
+    background: linear-gradient(180deg, #3D2817 0%, #2D1B00 100%);
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    padding: 0 10px;
+    border-top: 2px solid #1a0f00;
+    border-bottom: 2px solid #1a0f00;
+  }
+  
+  .res-item {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+  
+  .res-icon {
+    width: 22px;
+    height: 22px;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+  }
+  
+  .res-icon-food { background: linear-gradient(135deg, #EF5350, #C62828); }
+  .res-icon-energy { background: linear-gradient(135deg, #FFCA28, #F57F17); }
+  .res-icon-gem { background: linear-gradient(135deg, #AB47BC, #7B1FA2); }
+  
+  .res-value {
+    color: #FFF;
+    font-size: 12px;
+    font-weight: 700;
+  }
+  
+  .res-max {
+    color: #888;
+    font-size: 10px;
+  }
+
+  /* ====== 技能栏（第二期） ====== */
+  .skill-bar {
+    height: 52px;
+    background: linear-gradient(180deg, #2D1B00 0%, #1a0f00 100%);
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    padding: 0 8px;
+  }
+  
+  .skill-slot {
+    width: 46px;
+    height: 46px;
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    border: 2px solid rgba(255,255,255,0.1);
+  }
+  
+  .skill-icon {
+    font-size: 20px;
+  }
+  
+  .skill-cd {
+    position: absolute;
+    bottom: 1px;
+    font-size: 9px;
+    color: #FF5252;
+    font-weight: 800;
+  }
+  
+  .skill-1 { background: linear-gradient(135deg, #29B6F6, #0288D1); }
+  .skill-2 { background: linear-gradient(135deg, #FF7043, #D84315); }
+  .skill-3 { background: linear-gradient(135deg, #AB47BC, #7B1FA2); }
+  .skill-4 { background: linear-gradient(135deg, #78909C, #455A64); }
+
+  /* ====== 功能入口栏 ====== */
+  .nav-bar {
+    height: 54px;
+    background: linear-gradient(180deg, #1a0f00 0%, #0d0700 100%);
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    padding: 0 10px;
+  }
+  
+  .nav-btn {
+    width: 72px;
+    height: 40px;
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 2px;
+    cursor: pointer;
+    border: none;
+    transition: transform 0.1s;
+  }
+  
+  .nav-btn:active { transform: scale(0.95); }
+  
+  .nav-btn-enhance {
+    background: linear-gradient(135deg, #FF6B35 0%, #F7931E 100%);
+    box-shadow: 0 3px 8px rgba(255,107,53,0.3);
+  }
+  
+  .nav-btn-task {
+    background: linear-gradient(135deg, #66BB6A 0%, #43A047 100%);
+    box-shadow: 0 3px 8px rgba(102,187,106,0.3);
+  }
+  
+  .nav-btn-shop {
+    background: linear-gradient(135deg, #AB47BC 0%, #7B1FA2 100%);
+    box-shadow: 0 3px 8px rgba(171,71,188,0.3);
+  }
+  
+  .nav-icon { font-size: 18px; }
+  .nav-label { 
+    font-size: 10px; 
+    color: rgba(255,255,255,0.85); 
+    font-weight: 700;
+  }
+
+  /* ====== 设计标注 ====== */
+  .design-notes {
+    margin-top: 15px;
+    padding: 15px;
+    background: #1e1200;
+    border-radius: 12px;
+    max-width: 375px;
+    border: 1px solid #3d2817;
+  }
+  
+  .design-notes h3 {
+    color: #C8A84E;
+    font-size: 14px;
+    margin-bottom: 10px;
+  }
+  
+  .notes-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+  
+  .note-item {
+    background: rgba(255,255,255,0.04);
+    padding: 8px;
+    border-radius: 8px;
+    border-left: 3px solid #C8A84E;
+  }
+  
+  .note-item .label {
+    color: #C8A84E;
+    font-size: 11px;
+    font-weight: 600;
+  }
+  
+  .note-item .value {
+    color: #ccc;
+    font-size: 11px;
+    margin-top: 2px;
+  }
+
+  /* 弹珠动画效果 */
+  .ball-preview {
+    position: absolute;
+    width: 12px;
+    height: 12px;
+    background: radial-gradient(circle at 30% 30%, #fff, #e0e0e0);
+    border-radius: 50%;
+    box-shadow: 0 0 10px rgba(255,255,255,0.8), 0 0 20px rgba(255,255,255,0.3);
+    z-index: 10;
+    animation: ballFloat 1.5s ease-in-out infinite;
+  }
+  
+  @keyframes ballFloat {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.6; }
+  }
+
+  /* 次数显示 */
+  .shots-display {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(0,0,0,0.5);
+    border-radius: 10px;
+    padding: 4px 10px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+  
+  .shots-icon { font-size: 14px; }
+  .shots-count {
+    color: #4FC3F7;
+    font-size: 16px;
+    font-weight: 800;
+  }
+</style>
+</head>
+<body>
+
+<div style="display:flex;gap:30px;flex-wrap:wrap;justify-content:center;">
+  
+  <!-- 手机框架 -->
+  <div class="phone-frame">
+    
+    <!-- 顶栏 -->
+    <div class="top-bar">
+      <div class="top-left">
+        <div class="coin-display">
+          <div class="coin-icon">💰</div>
+          <span class="coin-amount">416.6T</span>
+        </div>
+      </div>
+      <div class="level-display">
+        <div class="chapter-text">第 16 章</div>
+        <div class="floor-text"><span class="floor-num">85</span> 层</div>
+      </div>
+      <div class="top-right">
+        <button class="ctrl-btn speed-btn">×2</button>
+        <button class="ctrl-btn pause-btn">⏸</button>
+      </div>
+    </div>
+
+    <!-- 任务提示 -->
+    <div class="task-bar">
+      <span class="task-icon">📋</span>
+      <span class="task-text">任务：使用技能击杀怪物</span>
+      <span class="task-progress">1/5</span>
+    </div>
+
+    <!-- 战场区 -->
+    <div class="battlefield" id="battlefield">
+      <div class="grid-container" id="grid">
+        <!-- Row 1 -->
+        <div class="grid-cell"></div>
+        <div class="grid-cell"><div class="monster monster-slime">🟢<div class="hp-bar-wrap"><div class="hp-bar high" style="width:90%"></div></div></div></div>
+        <div class="grid-cell"><div class="monster monster-slime">🟢<div class="hp-bar-wrap"><div class="hp-bar high" style="width:75%"></div></div></div></div>
+        <div class="grid-cell"><div class="monster monster-bat">🦇<div class="hp-bar-wrap"><div class="hp-bar mid" style="width:55%"></div></div></div></div>
+        <div class="grid-cell"></div>
+        <div class="grid-cell"></div>
+        
+        <!-- Row 2 -->
+        <div class="grid-cell"></div>
+        <div class="grid-cell"><div class="monster monster-bat">🦇<div class="hp-bar-wrap"><div class="hp-bar mid" style="width:40%"></div></div></div></div>
+        <div class="grid-cell"><div class="monster monster-skeleton">💀<div class="hp-bar-wrap"><div class="hp-bar low" style="width:25%"></div></div></div></div>
+        <div class="grid-cell"><div class="chest">📦</div></div>
+        <div class="grid-cell"></div>
+        <div class="grid-cell"></div>
+        
+        <!-- Row 3 -->
+        <div class="grid-cell"></div>
+        <div class="grid-cell"><div class="monster monster-slime">🟢<div class="hp-bar-wrap"><div class="hp-bar high" style="width:100%"></div></div></div></div>
+        <div class="grid-cell"><div class="monster monster-golem">🗿<div class="hp-bar-wrap"><div class="hp-bar low" style="width:15%"></div></div></div></div>
+        <div class="grid-cell"></div>
+        <div class="grid-cell"><div class="chest">📦</div></div>
+        <div class="grid-cell"></div>
+        
+        <!-- Row 4 -->
+        <div class="grid-cell"></div>
+        <div class="grid-cell"></div>
+        <div class="grid-cell"><div class="monster monster-bat">🦇<div class="hp-bar-wrap"><div class="hp-bar mid" style="width:60%"></div></div></div></div>
+        <div class="grid-cell"><div class="monster monster-mimic">🎁<div class="hp-bar-wrap"><div class="hp-bar low" style="width:30%"></div></div></div></div>
+        <div class="grid-cell"><div class="mystery-box">?</div></div>
+        <div class="grid-cell"></div>
+        
+        <!-- Row 5 -->
+        <div class="grid-cell"></div>
+        <div class="grid-cell"></div>
+        <div class="grid-cell"></div>
+        <div class="grid-cell"></div>
+        <div class="grid-cell"></div>
+        <div class="grid-cell"></div>
+        
+        <!-- Row 6-8 (空行，给发射区留空间) -->
+        <div class="grid-cell"></div><div class="grid-cell"></div><div class="grid-cell"></div><div class="grid-cell"></div><div class="grid-cell"></div><div class="grid-cell"></div>
+        <div class="grid-cell"></div><div class="grid-cell"></div><div class="grid-cell"></div><div class="grid-cell"></div><div class="grid-cell"></div><div class="grid-cell"></div>
+        <div class="grid-cell"></div><div class="grid-cell"></div><div class="grid-cell"></div><div class="grid-cell"></div><div class="grid-cell"></div><div class="grid-cell"></div>
+      </div>
+      
+      <!-- 发射区叠加层 -->
+      <div class="launch-zone" id="launchZone">
+        <!-- 弹道线 -->
+        <svg class="trajectory-line" viewBox="0 0 200 160">
+          <path class="traj-path" d="M100,155 Q130,100 170,40 Q185,15 195,5"/>
+          <circle class="traj-dot" cx="195" cy="5" r="4"/>
+          <circle class="traj-dot" cx="180" cy="26" r="3"/>
+          <circle class="traj-dot" cx="158" cy="54" r="3"/>
+          <circle class="traj-dot" cx="132" cy="86" r="3"/>
+          <circle class="traj-dot" cx="110" cy="120" r="3"/>
+        </svg>
+        
+        <!-- 发射次数 -->
+        <div class="shots-display">
+          <span class="shots-icon">🎯</span>
+          <span class="shots-count">12</span>
+        </div>
+        
+        <!-- 角色 + 弹珠预览 -->
+        <div class="player-char">🧙‍♂️</div>
+        <div class="ball-preview" style="bottom:82px;left:calc(50% - 6px);"></div>
+      </div>
+    </div>
+
+    <!-- 资源栏 -->
+    <div class="resource-bar">
+      <div class="res-item">
+        <div class="res-icon res-icon-food">🍖</div>
+        <span class="res-value">280</span>
+        <span class="res-max">/300</span>
+      </div>
+      <div class="res-item">
+        <div class="res-icon res-icon-energy">⚡</div>
+        <span class="res-value">100</span>
+      </div>
+      <div class="res-item">
+        <div class="res-icon res-icon-gem">💎</div>
+        <span class="res-value">4,772</span>
+      </div>
+    </div>
+
+    <!-- 技能栏 -->
+    <div class="skill-bar">
+      <div class="skill-slot skill-1">
+        <span class="skill-icon">⚡</span>
+        <span class="skill-cd">30</span>
+      </div>
+      <div class="skill-slot skill-2">
+        <span class="skill-icon">🔥</span>
+        <span class="skill-cd">80</span>
+      </div>
+      <div class="skill-slot skill-3">
+        <span class="skill-icon">💠</span>
+        <span class="skill-cd">100</span>
+      </div>
+      <div class="skill-slot skill-4">
+        <span class="skill-icon">💣</span>
+        <span class="skill-cd">150</span>
+      </div>
+    </div>
+
+    <!-- 功能导航 -->
+    <div class="nav-bar">
+      <button class="nav-btn nav-btn-enhance">
+        <span class="nav-icon">⚔️</span>
+        <span class="nav-label">强化</span>
+      </button>
+      <button class="nav-btn nav-btn-task">
+        <span class="nav-icon">📋</span>
+        <span class="nav-label">任务</span>
+      </button>
+      <button class="nav-btn nav-btn-shop">
+        <span class="nav-icon">🏪</span>
+        <span class="nav-label">商店</span>
+      </button>
+    </div>
+    
+  </div>
+  
+  <!-- 设计说明 -->
+  <div class="design-notes">
+    <h3>🎨 设计规范说明</h3>
+    <div class="notes-grid">
+      <div class="note-item">
+        <div class="label">配色主题</div>
+        <div class="value">大地棕 + 草地绿<br/>暖金强调色</div>
+      </div>
+      <div class="note-item">
+        <div class="label">网格尺寸</div>
+        <div class="value">6列 × 8行<br/>圆角格 + 内阴影</div>
+      </div>
+      <div class="note-item">
+        <div class="label">怪物区分</div>
+        <div class="value">5种颜色/形状<br/>+ 血条颜色变化</div>
+      </div>
+      <div class="note-item">
+        <div class="label">交互反馈</div>
+        <div class="value">弹道虚线预测<br/>点击任意位置发射</div>
+      </div>
+      <div class="note-item">
+        <div class="label">信息层级</div>
+        <div class="value">顶栏→战场→资源<br/>→技能→功能入口</div>
+      </div>
+      <div class="note-item">
+        <div class="label">动效细节</div>
+        <div class="value">怪物呼吸动画<br/>宝箱发光脉冲</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  // 动态计算战场高度
+  function resizeBattlefield() {
+    const bf = document.getElementById('battlefield');
+    const phone = document.querySelector('.phone-frame');
+    const phoneH = phone.clientHeight;
+    // 顶栏50 + 任务30 + 资源42 + 技能52 + 导航54 = 228
+    const otherH = 50 + 30 + 42 + 52 + 54;
+    bf.style.height = (phoneH - otherH) + 'px';
+  }
+  resizeBattlefield();
+  window.addEventListener('resize', resizeBattlefield);
+</script>
+
+</body>
+</html>

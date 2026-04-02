@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>弹珠 RPG</title>
+  <link rel="stylesheet" href="css/style.css">
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@700;800;900&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<div id="game-container">
+  <!-- 顶栏：等级 / 层数 / 控制按钮 -->
+  <div class="top-bar">
+    <div class="level-badge">
+      <div class="level-star">⭐</div>
+      <span class="level-text">Lv.1</span>
+    </div>
+    <div class="stage-display">
+      <div class="chapter-label">INFINITE DUNGEON</div>
+      <div class="floor-num">第 <span>1</span> 层</div>
+    </div>
+    <div class="ctrl-btns">
+      <button class="ctrl-btn speed-btn">⏩</button>
+      <button class="ctrl-btn pause-btn">⏸</button>
+    </div>
+  </div>
+
+  <!-- Canvas 渲染区 -->
+  <div class="canvas-wrap">
+    <canvas id="game-canvas"></canvas>
+  </div>
+
+  <!-- 发射次数显示（悬浮） -->
+  <div class="shot-info">
+    <span>🎯</span>
+    <span class="shot-count">8</span>
+  </div>
+
+  <!-- 经验条 -->
+  <div class="exp-bar">
+    <div class="exp-info">
+      <div class="exp-level">
+        <span>⚡</span> Lv.1
+      </div>
+      <div class="exp-value">0 / 100</div>
+    </div>
+    <div class="exp-track">
+      <div class="exp-fill"></div>
+    </div>
+  </div>
+
+  <!-- 过关弹窗 -->
+  <div id="level-overlay" class="game-overlay">
+    <div class="overlay-title">🎉 过关！</div>
+    <div class="overlay-sub">准备进入下一层</div>
+    <button class="overlay-btn btn-primary">继续 ▶</button>
+  </div>
+
+  <!-- 失败弹窗 -->
+  <div id="gameover-overlay" class="game-overlay">
+    <div class="overlay-title">💀 游戏结束</div>
+    <div class="overlay-sub">再接再厉！</div>
+    <button class="overlay-btn btn-secondary">重新开始 🔄</button>
+  </div>
+</div>
+
+<!-- JS 模块加载顺序很重要 -->
+<script src="js/entities.js"></script>
+<script src="js/physics.js"></script>
+<script src="js/renderer.js"></script>
+<script src="js/game.js"></script>
+<script src="js/main.js"></script>
+
+</body>
+</html>
