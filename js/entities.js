@@ -12,11 +12,11 @@ const ENTITY_RADIUS = 18; // 怪物/宝箱碰撞半径
 
 // 怪物类型配置
 const MONSTER_TYPES = {
-  SLIME:   { id: 'slime',   name: '史莱姆', hpMult: 1.0, color: '#4CAF50', sprite: 'monster-slime.jpg' },
-  BAT:     { id: 'bat',     name: '蝙蝠',   hpMult: 0.8, color: '#9C27B0', sprite: 'monster-bat.jpg' },
-  SKELETON:{ id: 'skeleton',name: '骷髅兵', hpMult: 2.0, color: '#E0E0E0', sprite: 'monster-skeleton.jpg' },
-  MIMIC:   { id: 'mimic',   name: '宝箱怪', hpMult: 3.0, color: '#FFC107', sprite: 'monster-slime.jpg' }, // 暂用slime图
-  GOLEM:   { id: 'golem',   name: '岩石傀儡',hpMult: 5.0, color: '#607D8B', sprite: 'monster-golem.jpg' },
+  SLIME:   { id: 'slime',   name: '史莱姆', hpMult: 1.0, color: '#4CAF50', sprite: 'sprites/monster-slime.jpg' },
+  BAT:     { id: 'bat',     name: '蝙蝠',   hpMult: 0.8, color: '#9C27B0', sprite: 'sprites/monster-bat.jpg' },
+  SKELETON:{ id: 'skeleton',name: '骷髅兵', hpMult: 2.0, color: '#E0E0E0', sprite: 'sprites/monster-skeleton.jpg' },
+  MIMIC:   { id: 'mimic',   name: '宝箱怪', hpMult: 3.0, color: '#FFC107', sprite: 'sprites/monster-slime.jpg' }, // 暂用slime图
+  GOLEM:   { id: 'golem',   name: '岩石傀儡',hpMult: 5.0, color: '#607D8B', sprite: 'sprites/monster-golem.jpg' },
 };
 
 // ==================== Ball（弹珠）====================
@@ -92,7 +92,7 @@ class Chest {
     this.radius = ENTITY_RADIUS - 2;
     this.active = true; // 未被打开
     this.opened = false;
-    this.spriteFile = 'chest-treasure.jpg';
+    this.spriteFile = 'sprites/chest-treasure.jpg';
   }
 
   open() {
@@ -114,7 +114,7 @@ class MysteryBox {
     this.y = 0;
     this.radius = ENTITY_RADIUS - 2;
     this.active = true;
-    this.spriteFile = 'mystery-box.jpg';
+    this.spriteFile = 'sprites/mystery-box.jpg';
   }
 
   open() {
@@ -133,7 +133,7 @@ class Player {
     // 底部居中
     this.x = canvasWidth / 2;
     this.y = canvasHeight - 70;
-    this.spriteFile = 'player-wizard.jpg';
+    this.spriteFile = 'sprites/player-wizard.jpg';
     this.spriteW = 46;
     this.spriteH = 46;
   }

@@ -101,12 +101,20 @@ class Renderer {
   // ==================== 背景 ====================
   drawBackground(w, h) {
     const ctx = this.ctx;
-    // 深棕色渐变底色
-    const grad = ctx.createRadialGradient(w / 2, h / 2, 0, w / 2, h / 2, w * 0.7);
-    grad.addColorStop(0, '#1e1208');
-    grad.addColorStop(1, '#0d0703');
+    // 深棕色渐变底色（稍微提亮，适配手机屏幕）
+    const grad = ctx.createRadialGradient(w / 2, h * 0.4, 0, w / 2, h * 0.6, w * 0.7);
+    grad.addColorStop(0, '#2a1a0e');
+    grad.addColorStop(1, '#120a04');
     ctx.fillStyle = grad;
     ctx.fillRect(0, 0, w, h);
+
+    // 添加微弱的噪点纹理感（用细小点阵）
+    ctx.fillStyle = 'rgba(255,255,255,0.008)';
+    for (let i = 0; i < 80; i++) {
+      const px = Math.random() * w;
+      const py = Math.random() * h;
+      ctx.fillRect(px, py, 1, 1);
+    }
   }
 
   // ==================== 网格 ====================
@@ -114,7 +122,7 @@ class Renderer {
     const ctx = this.ctx;
     const { left, top, cellW, cellH, cols, rows } = bounds;
 
-    ctx.strokeStyle = 'rgba(76, 175, 80, 0.12)';
+    ctx.strokeStyle = 'rgba(76, 175, 80, 0.25)';
     ctx.lineWidth = 1;
 
     // 垂直线
@@ -135,7 +143,7 @@ class Renderer {
     }
 
     // 格子中心微光点
-    ctx.fillStyle = 'rgba(76, 175, 80, 0.06)';
+    ctx.fillStyle = 'rgba(76, 175, 80, 0.12)';
     for (let c = 0; c < cols; c++) {
       for (let r = 0; r < rows; r++) {
         const cx = left + c * cellW + cellW / 2;
@@ -161,7 +169,7 @@ class Renderer {
       ctx.save();
       ctx.translate(monster.x, monster.y);
       ctx.scale(scale, scale);
-      this.drawImageCentered(monster.spriteFile, 0, 0, monster.radius * 2.2);
+      this.drawImageCentered(monster.spriteFile, 0, 0, monster.radius * 2.2, monster.color);
       ctx.restore();
       ctx.globalAlpha = 1;
       return;
@@ -184,7 +192,7 @@ class Renderer {
     }
 
     // 绘制精灵图
-    this.drawImageCentered(monster.spriteFile, 0, 0, monster.radius * 2.2);
+    this.drawImageCentered(monster.spriteFile, 0, 0, monster.radius * 2.2, monster.color);
 
     ctx.globalAlpha = 1;
     ctx.restore();
@@ -207,7 +215,7 @@ class Renderer {
 
     ctx.save();
     ctx.translate(chest.x, chest.y - bounce);
-    this.drawImageCentered(chest.spriteFile, 0, 0, chest.radius * 2.2);
+    this.drawImageCentered(chest.spriteFile, 0, 0, chest.radius * 2.2, '#FFD54F');
     ctx.restore();
 
     // 光晕提示
@@ -239,7 +247,7 @@ class Renderer {
     ctx.fill();
 
     // 角色精灵图
-    this.drawImageCentered(player.spriteFile, 0, 0, player.spriteW);
+    this.drawImageCentered(player.spriteFile, 0, 0, player.spriteW, '#4FC3F7');
 
     ctx.restore();
   }
@@ -348,23 +356,32 @@ class Renderer {
   }
 
   // ==================== 辅助：居中绘制图片 ====================
-  drawImageCentered(src, cx, cy, size) {
+  drawImageCentered(src, cx, cy, size, fallbackColor = '#666') {
     const ctx = this.ctx;
     const img = this.imageCache[src];
     if (img) {
       ctx.drawImage(img, cx - size / 2, cy - size / 2, size, size);
     } else {
-      // fallback：画一个带颜色的圆形
+      // fallback：画一个带颜色的圆形 + emoji
       ctx.beginPath();
       ctx.arc(cx, cy, size / 2, 0, Math.PI * 2);
-      ctx.fillStyle = '#666';
+      const grad = ctx.createRadialGradient(cx, cy - size * 0.15, 0, cx, cy, size / 2);
+      grad.addColorStop(0, fallbackColor);
+      grad.addColorStop(1, this.darkenColor(fallbackColor, 0.4));
+      ctx.fillStyle = grad;
       ctx.fill();
-      ctx.fillStyle = '#fff';
-      ctx.font = `${size * 0.3}px sans-serif`;
-      ctx.textAlign = 'center';
-      ctx.textBaseline = 'middle';
-      ctx.fillText('?', cx, cy);
+      // 边框
+      ctx.strokeStyle = 'rgba(255,255,255,0.2)';
+      ctx.lineWidth = 1.5;
+      ctx.stroke();
     }
+  }
+
+  darkenColor(hex, factor) {
+    const r = parseInt(hex.slice(1, 3), 16);
+    const g = parseInt(hex.slice(3, 5), 16);
+    const b = parseInt(hex.slice(5, 7), 16);
+    return `rgb(${Math.floor(r * factor)}, ${Math.floor(g * factor)}, ${Math.floor(b * factor)})`;
   }
 
   // ==================== 粒子系统 ====================
