@@ -478,12 +478,11 @@ function drawEntities(){
     drawMonster(e);ctx.globalAlpha=1;ctx.restore();
     // 血条
     if(e.hp<e.maxHp){const bw=38,bh=5;
-      ctx.fillStyle='rgba(0,0,0,.55)';ctx.beginPath();ctx.roundRect(e.x-bw/2,e.y-e.r-11,bw,bh,2);ctx.fill();
+      ctx.fillStyle='rgba(0,0,0,.55)';roundRect(e.x-bw/2,e.y-e.r-11,bw,bh,2);ctx.fill();
       const ratio=e.hp/e.maxHp;
-      ctx.fillStyle='#E53935';ctx.beginPath();ctx.roundRect(e.x-bw/2,e.y-e.r-11,bw*ratio,bh,2);ctx.fill();
-      // 血条边框
+      ctx.fillStyle='#E53935';roundRect(e.x-bw/2,e.y-e.r-11,bw*ratio,bh,2);ctx.fill();
       ctx.strokeStyle='rgba(0,0,0,.35)';ctx.lineWidth=.8;
-      ctx.beginPath();ctx.roundRect(e.x-bw/2,e.y-e.r-11,bw,bh,2);ctx.stroke();}
+      roundRect(e.x-bw/2,e.y-e.r-11,bw,bh,2);ctx.stroke();}
   }
 }
 
@@ -617,6 +616,9 @@ function drawFloats(){
     ctx.fillText(f.text,f.x,f.y);ctx.globalAlpha=1;if(f.life<=0)floats.splice(i,1);}}
 
 // ---- 工具 ----
+function roundRect(x,y,w,h,r){ctx.beginPath();ctx.moveTo(x+r,y);ctx.lineTo(x+w-r,y);ctx.quadraticCurveTo(x+w,y,x+w,y+r);
+  ctx.lineTo(x+w,y+h-r);ctx.quadraticCurveTo(x+w,y+h,x+w-r,y+h);ctx.lineTo(x+r,y+h);
+  ctx.quadraticCurveTo(x,y+h,x,y+h-r);ctx.lineTo(x,y+r);ctx.quadraticCurveTo(x,y,x+r,y);ctx.closePath();}
 function lighten(hex,f){const n=parseInt(hex.slice(1),16),r=(n>>16)&0xff,g=(n>>8)&0xff,b=n&0xff;
   return`rgb(${Math.min(255,r+(255-r)*f)},${Math.min(255,g+(255-g)*f)},${Math.min(255,b+(255-b)*f)})`;}
 
@@ -658,11 +660,17 @@ function loop(t){if(state==='playing')physics();render();requestAnimationFrame(l
 
 // ---- 启动 ----
 function init(){
+  try{
   resize();window.addEventListener('resize',resize);
   genFloor(1);bindInput();updateUI();
   document.getElementById('loading').style.display='none';
   console.log(`🎮 弹珠RPG v4 启动! 屏幕:${W}x${H}, 网格:${COLS}x${ROWS}, 格子:${grid.cw.toFixed(0)}x${grid.ch.toFixed(0)}`);
   requestAnimationFrame(loop);
+  }catch(err){console.error('[Init Error]',err);
+    document.getElementById('loading').innerHTML='<div style="font-size:28px">⚠️</div><div>加载出错: '+err.message+'</div>';
+    // 尝试继续
+    setTimeout(function(){try{if(!W)resize();genFloor(1);updateUI();document.getElementById('loading').style.display='none';requestAnimationFrame(loop);}catch(e){}},500);
+  }
 }
 document.addEventListener('DOMContentLoaded',init);
 </script>
