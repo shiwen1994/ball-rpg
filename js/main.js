@@ -44,8 +44,10 @@ async function initGame() {
   showLoading('加载素材中...');
   await renderer.preloadAll(spriteList);
 
-  // 初始化游戏
-  game.init();
+  // 初始化游戏（传入逻辑坐标）
+  const logicalW = canvas.width / (window.devicePixelRatio || 1);
+  const logicalH = canvas.height / (window.devicePixelRatio || 1);
+  game.init(logicalW, logicalH);
 
   // 绑定回调
   game.onLevelComplete = (floor) => {

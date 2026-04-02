@@ -54,16 +54,20 @@ class Game {
   }
 
   // ==================== 初始化 ====================
-  init() {
-    this.calcBounds();
-    this.player = new Player(this.canvas.width, this.canvas.height);
+  init(logicalW, logicalH) {
+    // 使用逻辑坐标（CSS像素），不依赖 canvas.width（设备像素）
+    this.calcBounds(logicalW, logicalH);
+    this.player = new Player(logicalW, logicalH);
     this.generateLevel(1);
+
+    console.log(`[Game] 初始化完成: ${this.entities.length}个实体, 网格${GRID_COLS}x${GRID_ROWS}, 格子${this.gridBounds.cellW.toFixed(0)}x${this.gridBounds.cellH.toFixed(0)}`);
   }
 
-  calcBounds() {
-    const w = this.canvas.width;
-    const h = this.canvas.height;
-    const padding = 8;
+  calcBounds(logicalW, logicalH) {
+    // 使用逻辑坐标（CSS像素），与 ctx.setTransform(dpr) 保持一致
+    const w = logicalW || this.canvas.width / (window.devicePixelRatio || 1);
+    const h = logicalH || this.canvas.height / (window.devicePixelRatio || 1);
+    const padding = 4;
     const topBarH = 48;
     const bottomBarH = 48;
 
@@ -72,7 +76,7 @@ class Game {
       left: padding,
       top: topBarH + padding,
       right: w - padding,
-      bottom: h - bottomBarH - 70, // 给角色留空间
+      bottom: h - bottomBarH - 60,
     };
 
     // 网格区域
@@ -387,9 +391,8 @@ class Game {
 
   // ==================== 尺寸变化时重新计算 ====================
   resize(w, h) {
-    // 注意：不要重置 canvas.width/height，由 main.js 的 resizeCanvas 统一处理 DPR
-    // 只重新计算边界和实体坐标
-    this.calcBounds();
+    // w, h 是 CSS 逻辑像素（由 main.js 的 resizeCanvas 传入）
+    this.calcBounds(w, h);
     // 更新所有实体像素坐标
     for (const entity of this.entities) {
       this.setEntityPixelPos(entity);

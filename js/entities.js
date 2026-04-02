@@ -8,7 +8,7 @@ const GRID_COLS = 8;
 const GRID_ROWS = 8;
 const BALL_RADIUS = 8;
 const BALL_SPEED = 10; // px/frame
-const ENTITY_RADIUS = 18; // 怪物/宝箱碰撞半径
+const ENTITY_RADIUS = 14; // 怪物/宝箱碰撞半径（调小让画面更紧凑）
 
 // 怪物类型配置
 const MONSTER_TYPES = {
@@ -129,17 +129,17 @@ class MysteryBox {
 // ==================== Player（玩家角色）====================
 class Player {
   constructor(canvasWidth, canvasHeight) {
-    this.radius = 22;
-    // 底部居中
+    this.radius = 20;
+    // 底部居中（使用逻辑坐标）
     this.x = canvasWidth / 2;
-    this.y = canvasHeight - 70;
+    this.y = canvasHeight - 55;
     this.spriteFile = 'sprites/player-wizard.jpg';
-    this.spriteW = 46;
-    this.spriteH = 46;
+    this.spriteW = 44;
+    this.spriteH = 44;
   }
 
   updatePosition(canvasWidth, canvasHeight) {
     this.x = canvasWidth / 2;
-    this.y = canvasHeight - 70;
+    this.y = canvasHeight - 55;
   }
 }
